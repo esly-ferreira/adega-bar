@@ -78,11 +78,7 @@ const App = {
 
     checkStoreStatus() {
         // Verificar status ao carregar
-        if (!Schedule.isOpen()) {
-            // Desabilitar adição ao carrinho se estiver fechado
-            // (opcional - pode ser removido se quiser permitir pedidos mesmo fechado)
-            console.log('Loja está fechada');
-        }
+        // O Schedule.checkStoreStatus() já faz isso automaticamente
     },
 
     highlightToday() {

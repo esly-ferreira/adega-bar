@@ -212,6 +212,12 @@ const Modal = {
     },
 
     openCheckout() {
+        // Verificar se está aberto antes de abrir checkout
+        if (typeof Schedule !== 'undefined' && !Schedule.isOpen()) {
+            Schedule.showClosedModal();
+            return;
+        }
+
         const modalOverlay = document.getElementById('modalOverlay');
         const cartSidebar = document.getElementById('cartSidebar');
         
@@ -222,6 +228,9 @@ const Modal = {
             }
             
             modalOverlay.style.display = 'flex';
+            
+            // Prevenir scroll do body quando modal estiver aberto
+            document.body.style.overflow = 'hidden';
             
             // Limpar formulário
             const form = document.getElementById('checkoutForm');
@@ -254,6 +263,14 @@ const Modal = {
                 el.textContent = '';
                 el.style.display = 'none';
             });
+
+            // Scroll suave para o topo do modal no mobile
+            setTimeout(() => {
+                const modalContent = document.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
         }
     },
 
@@ -261,6 +278,8 @@ const Modal = {
         const modalOverlay = document.getElementById('modalOverlay');
         if (modalOverlay) {
             modalOverlay.style.display = 'none';
+            // Restaurar scroll do body
+            document.body.style.overflow = '';
         }
     },
 

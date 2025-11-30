@@ -1,29 +1,22 @@
 // Schedule Management
 const Schedule = {
-    // Horários fixos por dia da semana
-    schedule: {
-        0: { open: '09:30', close: '22:00' }, // Domingo
-        1: { open: '15:00', close: '21:00' }, // Segunda
-        2: { open: '15:00', close: '21:00' }, // Terça
-        3: { open: '15:00', close: '21:00' }, // Quarta
-        4: { open: '15:00', close: '21:00' }, // Quinta
-        5: { open: '09:30', close: '23:30' }, // Sexta
-        6: { open: '09:30', close: '23:30' }  // Sábado
-    },
-
     init() {
         this.updateStatus();
+        this.checkStoreStatus();
         
         // Atualizar status a cada minuto
-        setInterval(() => this.updateStatus(), 60000);
+        setInterval(() => {
+            this.updateStatus();
+            this.checkStoreStatus();
+        }, 60000);
     },
 
     isOpen() {
         const now = new Date();
         const dayOfWeek = now.getDay(); // 0 = Domingo, 6 = Sábado
-        const currentSchedule = this.schedule[dayOfWeek];
+        const currentSchedule = ScheduleConfig.schedule[dayOfWeek];
         
-        if (!currentSchedule) {
+        if (!currentSchedule || !currentSchedule.enabled) {
             return false;
         }
 
@@ -63,5 +56,116 @@ const Schedule = {
             dot.classList.remove('open');
             text.textContent = 'Fechado';
         }
+    },
+
+    checkStoreStatus() {
+        const isOpen = this.isOpen();
+        
+        if (!isOpen) {
+            // Mostrar modal de fechado apenas uma vez por sessão
+            const hasShownModal = sessionStorage.getItem('closedModalShown');
+            if (!hasShownModal) {
+                this.showClosedModal();
+                sessionStorage.setItem('closedModalShown', 'true');
+            }
+            
+            // Desabilitar adição ao carrinho
+            this.disableCart();
+        } else {
+            // Habilitar adição ao carrinho
+            this.enableCart();
+        }
+    },
+
+    showClosedModal() {
+        const modal = document.getElementById('closedStoreModal');
+        const nextOpeningInfo = document.getElementById('nextOpeningInfo');
+        
+        if (!modal || !nextOpeningInfo) return;
+
+        const nextSchedule = ScheduleConfig.getNextOpeningTime();
+        
+        if (nextSchedule) {
+            let message = '';
+            if (nextSchedule.isToday) {
+                message = `Abrimos hoje (${nextSchedule.dayName}) às ${nextSchedule.time}.`;
+            } else {
+                message = `Abrimos ${nextSchedule.dayName} às ${nextSchedule.time}.`;
+            }
+            
+            nextOpeningInfo.textContent = message;
+        } else {
+            nextOpeningInfo.textContent = 'Não há horário de atendimento disponível.';
+        }
+
+        modal.style.display = 'flex';
+        
+        // Prevenir scroll do body
+        document.body.style.overflow = 'hidden';
+    },
+
+    hideClosedModal() {
+        const modal = document.getElementById('closedStoreModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    },
+
+    disableCart() {
+        // Desabilitar botões de adicionar ao carrinho
+        const addButtons = document.querySelectorAll('.btn-add');
+        addButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+            btn.title = 'Estabelecimento fechado';
+        });
+        
+        // Desabilitar botão de finalizar compra
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.classList.add('disabled');
+            checkoutBtn.title = 'Estabelecimento fechado';
+        }
+    },
+
+    enableCart() {
+        // Habilitar botões de adicionar ao carrinho
+        const addButtons = document.querySelectorAll('.btn-add');
+        addButtons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('disabled');
+            btn.title = '';
+        });
+        
+        // Habilitar botão de finalizar compra se necessário
+        if (typeof Cart !== 'undefined' && Cart.items && Cart.items.length > 0) {
+            const total = Cart.getTotal();
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn && total >= 15.00) {
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('disabled');
+            }
+        }
     }
 };
+
+// Event listener para fechar modal
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('closeClosedModalBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            Schedule.hideClosedModal();
+        });
+    }
+    
+    const closedModal = document.getElementById('closedStoreModal');
+    if (closedModal) {
+        closedModal.addEventListener('click', (e) => {
+            if (e.target === closedModal) {
+                Schedule.hideClosedModal();
+            }
+        });
+    }
+});
