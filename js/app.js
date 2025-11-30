@@ -124,8 +124,40 @@ function hideLoadingScreen() {
                 if (loadingScreen.parentNode) {
                     loadingScreen.parentNode.removeChild(loadingScreen);
                 }
+                // Mostrar modal de verificação de idade após loading
+                showAgeVerification();
             }, 500);
         }, 800);
+    }
+}
+
+function showAgeVerification() {
+    // Verificar se já foi aceito (localStorage)
+    const ageVerified = localStorage.getItem('age_verified');
+    if (ageVerified === 'true') {
+        return; // Já foi verificado, não mostrar novamente
+    }
+
+    const ageModal = document.getElementById('ageVerificationModal');
+    if (ageModal) {
+        ageModal.style.display = 'flex';
+        
+        const yesBtn = document.getElementById('ageYesBtn');
+        const noBtn = document.getElementById('ageNoBtn');
+        
+        if (yesBtn) {
+            yesBtn.addEventListener('click', () => {
+                localStorage.setItem('age_verified', 'true');
+                ageModal.style.display = 'none';
+            });
+        }
+        
+        if (noBtn) {
+            noBtn.addEventListener('click', () => {
+                // Redirecionar para a página de gatinhos fofos
+                window.location.href = 'https://www.google.com/search?sca_esv=77100b2799732c71&udm=2&fbs=AIIjpHydJdUtNKrM02hj0s4nbm4yAFb4PvhjIUcDtaFHkK_tyqfYVx0lCBcCX38sg5LqgWMbBDpOpi-b87KRYaAlAzJqMvLYsSu7hLLf25XWG1b4MJj_6fxV4AZEpY__HzhqACjy0QhbeBjtpt5qscoajdpdbvucruB8dtkcg5BjLY5ibiM-Czd5tGkRrzvAnpX4RdPHwzlgWIXsD0aApPVKNvCEJ89pUw&q=gatinhos+fofos&sa=X&ved=2ahUKEwit3b6lhZmRAxWEO7kGHedaNq8QtKgLegQIGBAB&biw=1064&bih=952&dpr=1';
+            });
+        }
     }
 }
 

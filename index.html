@@ -28,6 +28,22 @@
     </div>
   </div>
 
+  <!-- Age Verification Modal -->
+  <div class="age-verification-modal" id="ageVerificationModal" style="display: none;">
+    <div class="age-verification-content">
+      <div class="age-verification-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h2 class="age-verification-title">Verificação de Idade</h2>
+      <p class="age-verification-text">Você tem 18 anos ou mais?</p>
+      <p class="age-verification-subtext">Este site contém produtos para maiores de idade.</p>
+      <div class="age-verification-buttons">
+        <button class="btn-age-yes" id="ageYesBtn">Sim, tenho 18 anos ou mais</button>
+        <button class="btn-age-no" id="ageNoBtn">Não</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notifications Container -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -99,6 +115,11 @@
   </aside>
 
   <!-- Cart Toggle Button (Mobile) -->
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/5511964374582" class="whatsapp-toggle" id="whatsappToggle" target="_blank" rel="noopener noreferrer">
+    <i class="fab fa-whatsapp whatsapp-icon"></i>
+  </a>
+
   <button class="cart-toggle" id="cartToggle">
     <i class="fas fa-shopping-cart cart-icon"></i>
     <span class="cart-count" id="cartCount">0</span>
@@ -210,6 +231,11 @@
           <p class="footer-text">Av. Egito, 595</p>
           <p class="footer-text">Vila Bela, Franco da Rocha - SP</p>
           <p class="footer-text">07846-070, Brasil</p>
+          <p class="footer-text">
+            <a href="https://wa.me/5511964374582" class="footer-whatsapp-link" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-whatsapp"></i> whatsapp: (11) 96437-4582
+            </a>
+          </p>
         </div>
 
         <div class="footer-section">
@@ -250,6 +276,10 @@
       </div>
       <div class="footer-bottom">
         <p>&copy; 2025 Adega Bar. Todos os direitos reservados.</p>
+        <p class="footer-credits">
+          Site criado por <a href="https://esly.com.br" target="_blank" rel="noopener noreferrer" class="footer-link">Esly</a>
+        </p>
+        <p class="footer-version">Versão 0.0.8</p>
       </div>
     </div>
   </footer>

@@ -4,7 +4,7 @@ const ScheduleConfig = {
   schedule: {
     0: {
       // Domingo
-      open: "00:00",
+      open: "09:30",
       close: "22:00",
       enabled: true,
     },

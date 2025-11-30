@@ -40,9 +40,33 @@ const Cart = {
         this.render();
         this.updateCartButton();
         
+        // Animar botão do carrinho
+        this.animateCartButton();
+        
         // Abrir carrinho automaticamente no desktop
         if (window.innerWidth > 768) {
             this.openCart();
+        }
+    },
+
+    animateCartButton() {
+        const cartButton = document.getElementById('cartToggle');
+        const cartCount = document.getElementById('cartCount');
+        
+        if (cartButton) {
+            // Animação de bounce/pulse no botão
+            cartButton.classList.add('cart-bounce');
+            setTimeout(() => {
+                cartButton.classList.remove('cart-bounce');
+            }, 600);
+        }
+        
+        if (cartCount) {
+            // Animação de pop no contador
+            cartCount.classList.add('count-pop');
+            setTimeout(() => {
+                cartCount.classList.remove('count-pop');
+            }, 400);
         }
     },
 
@@ -82,6 +106,9 @@ const Cart = {
         this.saveToStorage();
         this.render();
         this.updateCartButton();
+        // Fechar carrinho e voltar para o topo
+        this.closeCart();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
     render() {
@@ -103,7 +130,10 @@ const Cart = {
 
             cartItems.innerHTML = this.items.map(item => `
                 <div class="cart-item" data-item-id="${item.id}">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-image-wrapper">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image" 
+                        onerror="this.onerror=null; Products.handleImageError(this, '${item.code || ''}')">
+                    </div>
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>

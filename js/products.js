@@ -457,9 +457,13 @@ const Products = {
       if (product.price === 0) {
         return; // Não adicionar produtos indisponíveis
       }
+
+      // Animação do produto caindo no carrinho
+      this.animateToCart(productId);
+
       Cart.addItem(product);
 
-      // Micro-animação de feedback
+      // Micro-animação de feedback no card
       const card = document.querySelector(`[data-product-id="${productId}"]`);
       if (card) {
         card.style.transform = "scale(0.95)";
@@ -468,6 +472,68 @@ const Products = {
         }, 150);
       }
     }
+  },
+
+  animateToCart(productId) {
+    const card = document.querySelector(`[data-product-id="${productId}"]`);
+    const cartButton = document.getElementById('cartToggle');
+    
+    if (!card || !cartButton) return;
+
+    // Obter posições
+    const cardRect = card.getBoundingClientRect();
+    const cartRect = cartButton.getBoundingClientRect();
+    
+    // Obter a imagem do produto
+    const productImage = card.querySelector('.product-image');
+    if (!productImage) return;
+
+    // Criar elemento animado (clone da imagem)
+    const flyingImage = document.createElement('div');
+    flyingImage.className = 'flying-product';
+    
+    // Usar a imagem real ou criar um placeholder
+    const img = document.createElement('img');
+    img.src = productImage.src;
+    img.alt = 'Produto';
+    img.style.width = '60px';
+    img.style.height = '60px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '8px';
+    
+    flyingImage.appendChild(img);
+    document.body.appendChild(flyingImage);
+
+    // Posição inicial (centro da imagem do produto)
+    const startX = cardRect.left + (cardRect.width / 2) - 30;
+    const startY = cardRect.top + (cardRect.height / 2) - 30;
+    
+    // Posição final (centro do botão do carrinho)
+    const endX = cartRect.left + (cartRect.width / 2) - 30;
+    const endY = cartRect.top + (cartRect.height / 2) - 30;
+
+    // Configurar posição inicial
+    flyingImage.style.left = startX + 'px';
+    flyingImage.style.top = startY + 'px';
+
+    // Trigger reflow para garantir que a animação funcione
+    flyingImage.offsetHeight;
+
+    // Animar
+    requestAnimationFrame(() => {
+      flyingImage.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      flyingImage.style.left = endX + 'px';
+      flyingImage.style.top = endY + 'px';
+      flyingImage.style.transform = 'scale(0.3)';
+      flyingImage.style.opacity = '0.8';
+    });
+
+    // Remover após animação
+    setTimeout(() => {
+      if (flyingImage.parentNode) {
+        flyingImage.parentNode.removeChild(flyingImage);
+      }
+    }, 600);
   },
 
   loadDefaultProducts() {
