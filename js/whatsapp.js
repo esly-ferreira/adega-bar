@@ -1,7 +1,7 @@
 // WhatsApp Integration
 const WhatsApp = {
     // Número do WhatsApp (formato: 5511999999999 - sem caracteres especiais)
-    phoneNumber: '5511999999999', // ALTERE AQUI com o número da adega
+    phoneNumber: '5511964374582', // Número da adega
 
     init() {
         // Carregar número do storage se existir
@@ -23,8 +23,19 @@ const WhatsApp = {
         let message = `*NOVO PEDIDO - ADEGA BAR*\n\n`;
         message += `*DADOS DO CLIENTE*\n`;
         message += `Nome: ${customer.name}\n`;
-        message += `Telefone: ${customer.phone}\n`;
-        message += `Endereço: ${customer.address}\n\n`;
+        message += `Telefone: ${customer.phone}\n\n`;
+        
+        message += `*ENDEREÇO DE ENTREGA*\n`;
+        message += `Rua: ${customer.street}\n`;
+        message += `Número: ${customer.number}\n`;
+        if (customer.complement) {
+            message += `Complemento: ${customer.complement}\n`;
+        }
+        message += `Bairro: ${customer.neighborhood}\n`;
+        if (customer.location) {
+            message += `📍 Localização: https://www.google.com/maps?q=${customer.location.lat},${customer.location.lng}\n`;
+        }
+        message += `\n`;
         
         message += `*ITENS DO PEDIDO*\n`;
         items.forEach((item, index) => {

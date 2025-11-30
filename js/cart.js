@@ -62,6 +62,7 @@ const Cart = {
             } else {
                 this.saveToStorage();
                 this.render();
+                this.updateCartButton();
             }
         }
     },
@@ -119,6 +120,40 @@ const Cart = {
             if (cartTotal) {
                 cartTotal.textContent = `R$ ${this.getTotal().toFixed(2).replace('.', ',')}`;
             }
+
+            // Verificar valor mínimo e atualizar botão/aviso
+            this.updateMinValueCheck();
+        }
+    },
+
+    updateMinValueCheck() {
+        const minValue = 15.00;
+        const total = this.getTotal();
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const minValueWarning = document.getElementById('minValueWarning');
+
+        if (total < minValue) {
+            // Desabilitar botão
+            if (checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('disabled');
+            }
+            // Mostrar aviso
+            if (minValueWarning) {
+                const missing = (minValue - total).toFixed(2).replace('.', ',');
+                minValueWarning.querySelector('span').textContent = `Valor mínimo de entrega: R$ ${minValue.toFixed(2).replace('.', ',')}. Faltam R$ ${missing}`;
+                minValueWarning.style.display = 'flex';
+            }
+        } else {
+            // Habilitar botão
+            if (checkoutBtn) {
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('disabled');
+            }
+            // Esconder aviso
+            if (minValueWarning) {
+                minValueWarning.style.display = 'none';
+            }
         }
     },
 
@@ -152,7 +187,12 @@ const Cart = {
         if (checkoutBtn) {
             checkoutBtn.addEventListener('click', () => {
                 if (this.items.length > 0) {
-                    Modal.openCheckout();
+                    const total = this.getTotal();
+                    if (total >= 15.00) {
+                        Modal.openCheckout();
+                    } else {
+                        alert(`Valor mínimo de entrega é R$ 15,00. Adicione mais produtos para finalizar a compra.`);
+                    }
                 }
             });
         }

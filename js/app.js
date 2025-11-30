@@ -13,6 +13,9 @@ const App = {
         
         // Verificar se está aberto antes de permitir compras
         this.checkStoreStatus();
+        
+        // Destacar dia atual no rodapé
+        this.highlightToday();
     },
 
     setupSearch() {
@@ -80,16 +83,62 @@ const App = {
             // (opcional - pode ser removido se quiser permitir pedidos mesmo fechado)
             console.log('Loja está fechada');
         }
+    },
+
+    highlightToday() {
+        const scheduleItems = document.querySelectorAll('.schedule-item');
+        const today = new Date().getDay(); // 0 = Domingo, 6 = Sábado
+        
+        // Mapear dias da semana para os itens do rodapé
+        const dayMap = {
+            0: 0, // Domingo
+            1: 1, // Segunda-feira
+            2: 2, // Terça-feira
+            3: 3, // Quarta-feira
+            4: 4, // Quinta-feira
+            5: 5, // Sexta-feira
+            6: 6  // Sábado
+        };
+        
+        const todayIndex = dayMap[today];
+        if (scheduleItems[todayIndex]) {
+            scheduleItems[todayIndex].classList.add('schedule-item-today');
+        }
     }
 };
+
+// Função para esconder tela de carregamento
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        // Aguardar um pouco para garantir que tudo carregou
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            // Remover do DOM após animação
+            setTimeout(() => {
+                if (loadingScreen.parentNode) {
+                    loadingScreen.parentNode.removeChild(loadingScreen);
+                }
+            }, 500);
+        }, 800);
+    }
+}
 
 // Inicializar quando o DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         App.init();
+        // Aguardar carregamento completo
+        window.addEventListener('load', hideLoadingScreen);
     });
 } else {
     App.init();
+    // Se já estiver carregado, aguardar um pouco antes de esconder
+    if (document.readyState === 'complete') {
+        hideLoadingScreen();
+    } else {
+        window.addEventListener('load', hideLoadingScreen);
+    }
 }
 
 // Expor WhatsApp.configure globalmente para fácil acesso

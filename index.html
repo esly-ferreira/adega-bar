@@ -5,19 +5,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adega Bar - Delivery</title>
+  <link rel="icon" type="image/png" href="logo/logo.png">
+  <link rel="shortcut icon" type="image/png" href="logo/logo.png">
+  <link rel="apple-touch-icon" href="logo/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <img src="logo/logo.png" alt="Adega Bar" class="loading-logo-image">
+      </div>
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Carregando...</p>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="header">
     <div class="header-container">
       <div class="logo">
-        <h1><i class="fas fa-wine-bottle"></i> Adega Bar</h1>
+        <img src="logo/logo.png" alt="Adega Bar" class="logo-image">
       </div>
       <div class="header-right">
         <div class="status-indicator" id="statusIndicator">
@@ -69,6 +84,10 @@
         <span class="total-label">Total:</span>
         <span class="total-value" id="cartTotal">R$ 0,00</span>
       </div>
+      <div class="min-value-warning" id="minValueWarning" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Valor mínimo de entrega: R$ 15,00</span>
+      </div>
       <button class="btn-clear-cart" id="clearCartBtn">Limpar Carrinho</button>
       <button class="btn-checkout" id="checkoutBtn">Finalizar Compra</button>
     </div>
@@ -90,16 +109,52 @@
       <form id="checkoutForm" class="checkout-form">
         <div class="form-group">
           <label for="customerName">Nome Completo</label>
-          <input type="text" id="customerName" class="form-input" required>
+          <input type="text" id="customerName" class="form-input" required pattern="[A-Za-zÀ-ÿ\s]+" title="Apenas letras são permitidas">
+          <small class="form-error" id="nameError"></small>
         </div>
         <div class="form-group">
           <label for="customerPhone">Telefone</label>
-          <input type="tel" id="customerPhone" class="form-input" required>
+          <input type="tel" id="customerPhone" class="form-input" required placeholder="(11) 99999-9999" maxlength="15">
+          <small class="form-error" id="phoneError"></small>
         </div>
+
         <div class="form-group">
-          <label for="customerAddress">Endereço Completo</label>
-          <textarea id="customerAddress" class="form-input form-textarea" rows="3" required></textarea>
+          <label>Endereço</label>
+          <button type="button" class="btn-location" id="getLocationBtn">
+            <i class="fas fa-map-marker-alt"></i> Usar Minha Localização
+          </button>
         </div>
+
+        <div class="form-group">
+          <label for="customerStreet">Rua</label>
+          <input type="text" id="customerStreet" class="form-input" required>
+          <small class="form-error" id="streetError"></small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-half">
+            <label for="customerNumber">Número</label>
+            <input type="text" id="customerNumber" class="form-input" required pattern="[0-9A-Za-z]+" title="Número do endereço">
+            <small class="form-error" id="numberError"></small>
+          </div>
+          <div class="form-group form-group-half">
+            <label for="customerComplement">Complemento</label>
+            <input type="text" id="customerComplement" class="form-input" placeholder="Apt, Bloco, etc.">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerNeighborhood">Bairro</label>
+          <input type="text" id="customerNeighborhood" class="form-input" required>
+          <small class="form-error" id="neighborhoodError"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Localização no Mapa</label>
+          <div id="map" class="map-container"></div>
+          <small class="map-hint">Clique no mapa ou use o botão acima para definir sua localização</small>
+        </div>
+
         <div class="form-group">
           <label for="paymentMethod">Forma de Pagamento</label>
           <select id="paymentMethod" class="form-input form-select" required>
@@ -108,21 +163,78 @@
             <option value="cartao">Cartão</option>
             <option value="dinheiro">Dinheiro</option>
           </select>
+          <small class="form-error" id="paymentError"></small>
         </div>
         <div class="form-actions">
           <button type="button" class="btn-cancel" id="cancelBtn">Cancelar</button>
           <button type="submit" class="btn-submit">Enviar Pedido</button>
         </div>
-        <div class="delivery-notice">
-          <i class="fas fa-info-circle"></i>
-          <span>A taxa de entrega será cobrada separadamente</span>
-        </div>
       </form>
+
+      <div class="delivery-notice-fixed">
+        <i class="fas fa-info-circle"></i>
+        <span>A taxa de entrega será cobrada separadamente</span>
+      </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">
+            <i class="fas fa-map-marker-alt"></i> Endereço
+          </h3>
+          <p class="footer-text">Av. Egito, 595</p>
+          <p class="footer-text">Vila Bela, Franco da Rocha - SP</p>
+          <p class="footer-text">07846-070, Brasil</p>
+        </div>
+
+        <div class="footer-section">
+          <h3 class="footer-title">
+            <i class="fas fa-clock"></i> Horário de Funcionamento
+          </h3>
+          <div class="schedule-list">
+            <div class="schedule-item">
+              <span class="schedule-day">Domingo</span>
+              <span class="schedule-time">09:30 - 22:00</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Segunda-feira</span>
+              <span class="schedule-time">15:00 - 21:00</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Terça-feira</span>
+              <span class="schedule-time">15:00 - 21:00</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Quarta-feira</span>
+              <span class="schedule-time">15:00 - 21:00</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Quinta-feira</span>
+              <span class="schedule-time">15:00 - 21:00</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Sexta-feira</span>
+              <span class="schedule-time">09:30 - 23:30</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-day">Sábado</span>
+              <span class="schedule-time">09:30 - 23:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Adega Bar. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
 
   <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="js/products.js"></script>
   <script src="js/schedule.js"></script>
   <script src="js/cart.js"></script>
