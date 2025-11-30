@@ -139,7 +139,7 @@ const Modal = {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Obtendo localização...';
 
         if (!navigator.geolocation) {
-            alert('Geolocalização não é suportada pelo seu navegador.');
+            Toast.error('Geolocalização não é suportada pelo seu navegador.');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Minha Localização';
             return;
@@ -168,7 +168,7 @@ const Modal = {
                 }, 2000);
             },
             (error) => {
-                alert('Erro ao obter localização. Por favor, selecione manualmente no mapa.');
+                Toast.error('Erro ao obter localização. Por favor, selecione manualmente no mapa.');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Minha Localização';
             }
@@ -378,7 +378,7 @@ const Modal = {
 
         // Verificar se o carrinho está vazio
         if (!Cart.items || Cart.items.length === 0) {
-            alert('Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.');
+            Toast.warning('Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.');
             return;
         }
 
@@ -387,7 +387,7 @@ const Modal = {
         const minDeliveryValue = 15.00;
         if (total < minDeliveryValue) {
             const missing = (minDeliveryValue - total).toFixed(2).replace('.', ',');
-            alert(`Valor mínimo de entrega é R$ ${minDeliveryValue.toFixed(2).replace('.', ',')}.\nVocê precisa adicionar mais R$ ${missing} em produtos.`);
+            Toast.warning(`Valor mínimo de entrega é R$ ${minDeliveryValue.toFixed(2).replace('.', ',')}. Você precisa adicionar mais R$ ${missing} em produtos.`);
             return;
         }
 
@@ -432,10 +432,10 @@ const Modal = {
             this.closeCheckout();
 
             // Feedback
-            alert('Pedido enviado com sucesso! Você será redirecionado para o WhatsApp.');
+            Toast.success('Pedido enviado com sucesso! Você será redirecionado para o WhatsApp.');
         } catch (error) {
             console.error('Erro ao finalizar pedido:', error);
-            alert('Erro ao finalizar pedido. Por favor, tente novamente.');
+            Toast.error('Erro ao finalizar pedido. Por favor, tente novamente.');
         }
     }
 };

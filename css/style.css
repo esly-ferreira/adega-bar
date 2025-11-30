@@ -1546,6 +1546,130 @@ body {
   }
 }
 
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 300px;
+  max-width: 100%;
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  border-left: 4px solid;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast-success {
+  border-left-color: var(--success-color);
+  background: #f0f9f4;
+}
+
+.toast-error {
+  border-left-color: #e74c3c;
+  background: #fef2f2;
+}
+
+.toast-warning {
+  border-left-color: #f39c12;
+  background: #fffbf0;
+}
+
+.toast-info {
+  border-left-color: var(--primary-color);
+  background: #fff9e6;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.toast-content i {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-content i {
+  color: var(--success-color);
+}
+
+.toast-error .toast-content i {
+  color: #e74c3c;
+}
+
+.toast-warning .toast-content i {
+  color: #f39c12;
+}
+
+.toast-info .toast-content i {
+  color: var(--primary-color);
+}
+
+.toast-message {
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    top: 0.5rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: 100%;
+  }
+
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
 /* Footer */
 .footer {
   background: var(--text-primary);

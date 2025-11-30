@@ -191,7 +191,7 @@ const Cart = {
                     if (total >= 15.00) {
                         Modal.openCheckout();
                     } else {
-                        alert(`Valor mínimo de entrega é R$ 15,00. Adicione mais produtos para finalizar a compra.`);
+                        Toast.warning('Valor mínimo de entrega é R$ 15,00. Adicione mais produtos para finalizar a compra.');
                     }
                 }
             });
@@ -201,9 +201,9 @@ const Cart = {
         if (clearCartBtn) {
             clearCartBtn.addEventListener('click', () => {
                 if (this.items.length > 0) {
-                    if (confirm('Tem certeza que deseja limpar o carrinho?')) {
-                        this.clear();
-                    }
+                    // Limpar carrinho diretamente com feedback via toast
+                    this.clear();
+                    Toast.info('Carrinho limpo com sucesso!');
                 }
             });
         }

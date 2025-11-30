@@ -65,7 +65,7 @@ const WhatsApp = {
 
     sendOrder(orderData) {
         if (!this.phoneNumber || this.phoneNumber.length < 10) {
-            alert('Número do WhatsApp não configurado. Por favor, configure nas opções.');
+            Toast.error('Número do WhatsApp não configurado. Por favor, configure nas opções.');
             return;
         }
 
@@ -81,7 +81,7 @@ const WhatsApp = {
         const number = prompt('Digite o número do WhatsApp (com DDD, ex: 11999999999):');
         if (number) {
             this.setPhoneNumber(number);
-            alert('Número configurado com sucesso!');
+            Toast.success('Número configurado com sucesso!');
         }
     }
 };

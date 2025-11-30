@@ -2,6 +2,7 @@
 const App = {
     init() {
         // Inicializar todos os módulos
+        Toast.init();
         Products.init();
         Schedule.init();
         Cart.init();
@@ -153,7 +154,7 @@ window.configureWhatsApp = () => {
 // Função para importar produtos via TXT (pode ser chamada via console)
 window.importProducts = (text) => {
     const count = Products.importFromTXT(text);
-    alert(`${count} produto(s) importado(s) com sucesso!`);
+    Toast.success(`${count} produto(s) importado(s) com sucesso!`);
     return count;
 };
 
@@ -170,7 +171,7 @@ window.importProductsFromFile = () => {
             reader.onload = (event) => {
                 const text = event.target.result;
                 const count = Products.importFromTXT(text);
-                alert(`${count} produto(s) importado(s) com sucesso!`);
+                Toast.success(`${count} produto(s) importado(s) com sucesso!`);
             };
             reader.readAsText(file);
         }
