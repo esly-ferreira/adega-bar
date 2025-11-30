@@ -25,11 +25,19 @@ const App = {
         if (searchInput && suggestionsContainer) {
             let searchTimeout;
             let hideTimeout;
+            let wasEmpty = true; // Rastreia se o campo estava vazio antes
             
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchTimeout);
                 clearTimeout(hideTimeout);
                 const query = e.target.value.trim();
+                const isEmpty = query.length === 0;
+                
+                // Se estava vazio e agora tem conteúdo, rolar para o topo
+                if (wasEmpty && !isEmpty) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                wasEmpty = isEmpty;
                 
                 // Mostrar sugestões enquanto digita
                 if (query.length > 0) {

@@ -173,8 +173,38 @@ const Products = {
       categoriesMap[cat].push(product);
     });
 
-    // Criar array de categorias ordenadas
-    this.categories = Object.keys(categoriesMap).sort();
+    // Ordem customizada das categorias
+    const categoryOrder = [
+      "CERVEJA",
+      "CHOPP",
+      "COMBOS",
+      "DOSES",
+      "ENERGÉTICO",
+      "GELO",
+      "ICE",
+      "REFRIGERANTE",
+      "ÁGUA/SUCO",
+      "BATIDAS",
+    ];
+
+    // Criar array de categorias na ordem especificada
+    const orderedCategories = [];
+    const allCategories = Object.keys(categoriesMap);
+
+    // Adicionar categorias na ordem especificada
+    categoryOrder.forEach((category) => {
+      if (allCategories.includes(category)) {
+        orderedCategories.push(category);
+      }
+    });
+
+    // Adicionar categorias restantes que não estão na ordem especificada (em ordem alfabética)
+    const remainingCategories = allCategories
+      .filter((cat) => !categoryOrder.includes(cat))
+      .sort();
+    orderedCategories.push(...remainingCategories);
+
+    this.categories = orderedCategories;
   },
 
   getProductsByCategory(category) {
@@ -357,23 +387,58 @@ const Products = {
     const disabledClass = !isOpen ? "disabled" : "";
     const disabledAttr = !isOpen ? "disabled" : "";
 
+    // Categorias que devem ter o ícone de floco de neve (bebidas geladas)
+    const coldCategories = [
+      "CERVEJA",
+      "CHOPP",
+      "COMBOS",
+      "DOSES",
+      "ENERGÉTICO",
+      "GELO",
+      "ICE",
+      "REFRIGERANTE",
+      "ÁGUA/SUCO",
+      "BATIDAS",
+    ];
+
+    const showSnowflake = coldCategories.includes(product.category);
+
     return `
             <div class="product-card" data-product-id="${product.id}">
-                <img src="${product.image}" alt="${
+                <div class="product-image-wrapper">
+                    <img src="${product.image}" alt="${
       product.name
-    }" class="product-image" loading="lazy">
+    }" class="product-image" loading="lazy" 
+                    onerror="this.onerror=null; Products.handleImageError(this, '${
+                      product.code || ""
+                    }')">
+                    ${
+                      showSnowflake
+                        ? '<i class="fas fa-snowflake cold-icon"></i>'
+                        : ""
+                    }
+                </div>
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
-                    <p class="product-price">R$ ${product.price
-                      .toFixed(2)
-                      .replace(".", ",")}</p>
+                    ${
+                      product.price === 0
+                        ? '<p class="product-unavailable">Não está disponível no site</p>'
+                        : `<p class="product-price">R$ ${product.price
+                            .toFixed(2)
+                            .replace(".", ",")}</p>`
+                    }
                     <div class="product-actions">
-                        <button class="btn-add ${disabledClass}" onclick="Products.addToCart(${
-      product.id
-    })" ${disabledAttr}>
-                            Adicionar
-                        </button>
+                        ${
+                          product.price === 0
+                            ? '<button class="btn-add disabled" disabled>Indisponível</button>'
+                            : `<button class="btn-add ${disabledClass}" onclick="Products.addToCart(${product.id})" ${disabledAttr}>Adicionar</button>`
+                        }
                     </div>
+                    ${
+                      product.code
+                        ? `<p class="product-code">Código: ${product.code}</p>`
+                        : ""
+                    }
                 </div>
             </div>
         `;
@@ -388,6 +453,10 @@ const Products = {
 
     const product = this.items.find((p) => p.id === productId);
     if (product) {
+      // Verificar se o produto está disponível (preço > 0)
+      if (product.price === 0) {
+        return; // Não adicionar produtos indisponíveis
+      }
       Cart.addItem(product);
 
       // Micro-animação de feedback
@@ -441,34 +510,110 @@ const Products = {
       });
   },
 
+  // Função para gerar o caminho da imagem baseado no código
+  getImagePath(code) {
+    if (!code) return null; // Retornar null para produtos sem código
+    // Tentar webp primeiro (mais moderno e eficiente), depois png
+    return `images/${code}.webp`;
+  },
+
+  // Função para lidar com erro de imagem
+  handleImageError(img, code) {
+    if (!code) {
+      this.showBeerIcon(img);
+      return;
+    }
+
+    // Tentar diferentes extensões
+    const extensions = ["webp", "png", "jpg", "jpeg", "gif"];
+    const currentSrc = img.src || "";
+    const currentExt = currentSrc.split(".").pop()?.toLowerCase().split("?")[0];
+    const currentIndex = extensions.indexOf(currentExt);
+
+    // Tentar próxima extensão
+    if (currentIndex < extensions.length - 1) {
+      const nextExt = extensions[currentIndex + 1];
+      // Garantir que o onerror será chamado novamente
+      img.onerror = () => {
+        img.onerror = null;
+        this.handleImageError(img, code);
+      };
+      img.src = `images/${code}.${nextExt}`;
+    } else {
+      // Se todas as extensões falharam, mostrar ícone de cerveja
+      this.showBeerIcon(img);
+    }
+  },
+
+  // Função para mostrar ícone de garrafa de cerveja quando imagem não for encontrada
+  showBeerIcon(img) {
+    if (!img) return;
+
+    // Prevenir múltiplas chamadas
+    if (img.dataset.beerIconShown === "true") return;
+    img.dataset.beerIconShown = "true";
+
+    // Esconder a imagem
+    img.style.display = "none";
+    img.style.visibility = "hidden";
+
+    // Criar ou obter o wrapper
+    const wrapper = img.parentElement;
+    if (!wrapper) return;
+
+    // Verificar se já existe um ícone
+    let iconElement = wrapper.querySelector(".beer-icon-fallback");
+    if (!iconElement) {
+      // Criar o ícone
+      iconElement = document.createElement("div");
+      iconElement.className = "beer-icon-fallback";
+      iconElement.innerHTML = '<i class="fas fa-wine-bottle"></i>';
+      wrapper.appendChild(iconElement);
+    }
+
+    // Garantir que o ícone seja visível
+    iconElement.style.display = "flex";
+  },
+
   importFromTXT(text) {
-    // Formato esperado: Nome do Produto | Preço | Outras Informações (opcional)
+    // Formato esperado: Nome do Produto | Código | Preço
+    // Ou formato antigo: Nome do Produto | Preço (para compatibilidade)
     const lines = text.split("\n").filter((line) => line.trim());
     const newProducts = [];
 
     lines.forEach((line, index) => {
       const parts = line.split("|").map((p) => p.trim());
-      if (parts.length >= 2) {
-        const name = parts[0];
+
+      let name, code, price;
+
+      if (parts.length >= 3) {
+        // Novo formato: Nome | Código | Preço
+        name = parts[0];
+        code = parts[1];
+        const priceStr = parts[2].replace(/[^\d,.-]/g, "").replace(",", ".");
+        price = parseFloat(priceStr);
+      } else if (parts.length >= 2) {
+        // Formato antigo: Nome | Preço (compatibilidade)
+        name = parts[0];
+        code = null;
         const priceStr = parts[1].replace(/[^\d,.-]/g, "").replace(",", ".");
-        const price = parseFloat(priceStr);
+        price = parseFloat(priceStr);
+      }
 
-        const otherInfo = parts[2] || "";
-        const image =
-          otherInfo.startsWith("http://") || otherInfo.startsWith("https://")
-            ? otherInfo
-            : "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop";
+      if (name && !isNaN(price) && price >= 0) {
+        const category = this.getCategoryFromName(name);
+        const image = code ? this.getImagePath(code) : null;
 
-        if (name && !isNaN(price) && price > 0) {
-          const category = this.getCategoryFromName(name);
-          newProducts.push({
-            id: Date.now() + index,
-            name,
-            price,
-            image,
-            category,
-          });
-        }
+        newProducts.push({
+          id: Date.now() + index,
+          name,
+          code: code || null,
+          price,
+          image:
+            image ||
+            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3C/svg%3E",
+          category,
+        });
       }
     });
 
