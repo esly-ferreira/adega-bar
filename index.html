@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adega Bar - Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <h1><i class="fas fa-wine-bottle"></i> Adega Bar</h1>
+      </div>
+      <div class="header-right">
+        <div class="status-indicator" id="statusIndicator">
+          <span class="status-dot"></span>
+          <span class="status-text">Verificando...</span>
+        </div>
+        <div class="search-container">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar produtos..." autocomplete="off">
+          <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Categories Navigation -->
+      <div class="categories-nav" id="categoriesNav">
+        <!-- Categories will be inserted here by JavaScript -->
+      </div>
+
+      <!-- Products by Category -->
+      <div class="products-container" id="productsContainer">
+        <!-- Products organized by category will be inserted here -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <p>Nenhum produto encontrado.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cart Sidebar -->
+  <aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2>Carrinho</h2>
+      <button class="cart-close" id="cartClose">&times;</button>
+    </div>
+    <div class="cart-content" id="cartContent">
+      <div class="cart-empty" id="cartEmpty">
+        <p>Nenhum item adicionado ainda</p>
+      </div>
+      <div class="cart-items" id="cartItems" style="display: none;"></div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display: none;">
+      <div class="cart-total">
+        <span class="total-label">Total:</span>
+        <span class="total-value" id="cartTotal">R$ 0,00</span>
+      </div>
+      <button class="btn-clear-cart" id="clearCartBtn">Limpar Carrinho</button>
+      <button class="btn-checkout" id="checkoutBtn">Finalizar Compra</button>
+    </div>
+  </aside>
+
+  <!-- Cart Toggle Button (Mobile) -->
+  <button class="cart-toggle" id="cartToggle">
+    <i class="fas fa-shopping-cart cart-icon"></i>
+    <span class="cart-count" id="cartCount">0</span>
+  </button>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Finalizar Compra</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <form id="checkoutForm" class="checkout-form">
+        <div class="form-group">
+          <label for="customerName">Nome Completo</label>
+          <input type="text" id="customerName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="customerPhone">Telefone</label>
+          <input type="tel" id="customerPhone" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="customerAddress">Endereço Completo</label>
+          <textarea id="customerAddress" class="form-input form-textarea" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="paymentMethod">Forma de Pagamento</label>
+          <select id="paymentMethod" class="form-input form-select" required>
+            <option value="">Selecione...</option>
+            <option value="pix">PIX</option>
+            <option value="cartao">Cartão</option>
+            <option value="dinheiro">Dinheiro</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" id="cancelBtn">Cancelar</button>
+          <button type="submit" class="btn-submit">Enviar Pedido</button>
+        </div>
+        <div class="delivery-notice">
+          <i class="fas fa-info-circle"></i>
+          <span>A taxa de entrega será cobrada separadamente</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="js/products.js"></script>
+  <script src="js/schedule.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/whatsapp.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

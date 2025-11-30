@@ -1,0 +1,11 @@
+Vinho Tinto Reserva|89.90|https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop
+Cerveja Artesanal IPA|12.90|https://images.unsplash.com/photo-1608270586621-1a945f5db65f?w=400&h=400&fit=crop
+Whisky Escocês 12 Anos|189.90|https://images.unsplash.com/photo-1608270586205-53e3f5c64f33?w=400&h=400&fit=crop
+Vodka Premium|79.90|https://images.unsplash.com/photo-1608270586205-53e3f5c64f33?w=400&h=400&fit=crop
+Champagne Brut|149.90|https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop
+Rum Envelhecido|99.90|https://images.unsplash.com/photo-1608270586205-53e3f5c64f33?w=400&h=400&fit=crop
+Gin Premium|119.90|https://images.unsplash.com/photo-1608270586205-53e3f5c64f33?w=400&h=400&fit=crop
+Cerveja Pilsen|8.90|https://images.unsplash.com/photo-1608270586621-1a945f5db65f?w=400&h=400&fit=crop
+Vinho Branco Seco|69.90|https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop
+Tequila Premium|139.90|https://images.unsplash.com/photo-1608270586205-53e3f5c64f33?w=400&h=400&fit=crop
+
