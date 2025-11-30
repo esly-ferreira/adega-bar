@@ -525,7 +525,7 @@ const Products = {
     }
 
     // Tentar diferentes extensões
-    const extensions = ["webp", "png", "jpg", "jpeg", "gif"];
+    const extensions = ["webp", "png", "jpg", "jpeg"];
     const currentSrc = img.src || "";
     const currentExt = currentSrc.split(".").pop()?.toLowerCase().split("?")[0];
     const currentIndex = extensions.indexOf(currentExt);

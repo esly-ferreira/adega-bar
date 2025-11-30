@@ -177,6 +177,7 @@ const Modal = {
 
     async reverseGeocode(lat, lng) {
         try {
+            // Usar OpenStreetMap Nominatim (gratuito, sem necessidade de API key)
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
             const data = await response.json();
             
@@ -184,10 +185,44 @@ const Modal = {
                 const addr = data.address;
                 
                 // Preencher campos automaticamente se disponível
-                if (addr.road) document.getElementById('customerStreet').value = addr.road;
-                if (addr.house_number) document.getElementById('customerNumber').value = addr.house_number;
-                if (addr.suburb || addr.neighbourhood) {
-                    document.getElementById('customerNeighborhood').value = addr.suburb || addr.neighbourhood;
+                const streetField = document.getElementById('customerStreet');
+                const numberField = document.getElementById('customerNumber');
+                const neighborhoodField = document.getElementById('customerNeighborhood');
+                
+                // Tentar diferentes campos para o nome da rua
+                if (streetField) {
+                    const streetName = addr.road || 
+                                     addr.street || 
+                                     addr.pedestrian || 
+                                     addr.path || 
+                                     addr.footway ||
+                                     (addr.display_name && addr.display_name.split(',')[0]);
+                    if (streetName) {
+                        streetField.value = streetName;
+                    }
+                }
+                
+                // Tentar diferentes campos para o número
+                if (numberField) {
+                    const houseNumber = addr.house_number || 
+                                      addr.house || 
+                                      addr.building ||
+                                      addr.housenumber;
+                    if (houseNumber) {
+                        numberField.value = houseNumber;
+                    }
+                }
+                
+                // Preencher bairro
+                if (neighborhoodField) {
+                    const neighborhood = addr.suburb || 
+                                       addr.neighbourhood || 
+                                       addr.quarter ||
+                                       addr.city_district ||
+                                       addr.village;
+                    if (neighborhood) {
+                        neighborhoodField.value = neighborhood;
+                    }
                 }
             }
         } catch (error) {
